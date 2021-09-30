@@ -2,6 +2,8 @@ package ru.geekbrains.java.hw6;
 
 import java.util.NoSuchElementException;
 
+import static java.lang.Math.max;
+
 public class MyTreeMap<K extends Comparable<K>, V> {
     private Node root;
 
@@ -11,11 +13,13 @@ public class MyTreeMap<K extends Comparable<K>, V> {
         Node left;
         Node right;
         int size;
+        int height;
 
         public Node(K key, V value) {
             this.key = key;
             this.value = value;
             this.size = 1;
+            this.height = 0;
         }
     }
 
@@ -29,6 +33,18 @@ public class MyTreeMap<K extends Comparable<K>, V> {
         }
         return node.size;
     }
+
+    public int height() {
+        return height(root);
+    }
+
+    private int height(Node node) {
+        if (node == null) {
+            return 0;
+        }
+        return node.height;
+    }
+
 
     public boolean isEmpty() {
         return root == null;
@@ -85,6 +101,7 @@ public class MyTreeMap<K extends Comparable<K>, V> {
             node.right = put(node.right, key, value);
         }
         node.size = size(node.left) + size(node.right) + 1;
+        node.height = max(height(node.left),height(node.right)) + 1;
         return node;
     }
 
@@ -112,6 +129,7 @@ public class MyTreeMap<K extends Comparable<K>, V> {
         }
         node.left = removeMin(node.left);
         node.size = size(node.left) + size(node.right) + 1;
+        node.height = max(height(node.left),height(node.right)) + 1;
         return node;
     }
 
@@ -142,7 +160,25 @@ public class MyTreeMap<K extends Comparable<K>, V> {
             node.left = temp.left;
         }
         node.size = size(node.left) + size(node.right) + 1;
+        node.height = max(height(node.left),height(node.right)) + 1;
         return node;
+    }
+
+    public boolean isBalanced(){
+        if (isEmpty()) {
+            return true;
+        }
+        return isBalanced(root);
+    }
+
+    public boolean isBalanced(Node node){
+        if (height(node) == 0) {
+            return true;
+        }
+        if(Math.abs(height(node.left) - height(node.right)) > 1){
+            return false;
+        }
+        return isBalanced(node.left) && isBalanced(node.right);
     }
 
     @Override
